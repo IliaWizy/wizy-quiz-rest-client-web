@@ -1,0 +1,26 @@
+import type {NextAuthConfig} from 'next-auth';
+
+export const authConfig = {
+    pages: {
+        signIn: '/sing-in',
+    },
+    callbacks: {
+        authorized({auth, request: {nextUrl}}) {
+            console.log('authorized', auth, nextUrl)
+
+            const isLoggedIn = !!auth?.user;
+            const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+            console.log('isOnDashboard', isOnDashboard)
+
+            if (isOnDashboard) {
+                if (isLoggedIn) return true;
+                return false;
+            } else if (isLoggedIn) {
+                return Response.redirect(new URL('/dashboard', nextUrl));
+            }
+            return true;
+        },
+    },
+    providers: []
+
+} satisfies NextAuthConfig;
